@@ -106,4 +106,33 @@ public class AuthenticationController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
         }
     }
+    @RestController
+    @RequestMapping("/auth")
+    @CrossOrigin
+    public class AuthController {
+
+        private final UserDao userDao;
+
+        public AuthController(UserDao userDao) {
+            this.userDao = userDao;
+        }
+
+        @GetMapping("/me")
+        public ResponseEntity<User> getCurrentUser(Authentication authentication) {
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            String username = authentication.getName();
+            User user = userDao.getByUserName(username);
+
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+
+            // Şifreyi gizleyelim
+            user.setPassword(null);
+            return ResponseEntity.ok(user);
+        }
+    }
 }
