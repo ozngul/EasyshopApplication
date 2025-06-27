@@ -78,53 +78,68 @@ class ShoppingCartService {
            });
        }
 
-   buildItem(item, parent)
-   {
-       let outerDiv = document.createElement("div");
-       outerDiv.classList.add("cart-item");
+  buildItem(item, parent) {
+      const outerDiv = document.createElement("div");
+      outerDiv.classList.add("cart-item");
 
-       // Ürün adı
-       let titleDiv = document.createElement("div");
-       let h4 = document.createElement("h4");
-       h4.innerText = item.product.name;
-       titleDiv.appendChild(h4);
-       outerDiv.appendChild(titleDiv);
+      const titleDiv = document.createElement("div");
+      const h4 = document.createElement("h4");
+      h4.innerText = item.product.name;
+      titleDiv.appendChild(h4);
+      outerDiv.appendChild(titleDiv);
 
-       // Ürün görseli + fiyat
-       let photoDiv = document.createElement("div");
-       photoDiv.classList.add("photo");
+      const photoDiv = document.createElement("div");
+      photoDiv.classList.add("photo");
 
-       let img = document.createElement("img");
-       img.src = `/images/products/${item.product.imageUrl}`;
-       img.alt = item.product.name;
-       img.addEventListener("click", () => {
-           showImageDetailForm(item.product.name, img.src);
-       });
+      const img = document.createElement("img");
+      img.src = `/images/products/${item.product.imageUrl}`;
+      img.alt = item.product.name;
+      img.addEventListener("click", () => {
+          showImageDetailForm(item.product.name, img.src);
+      });
 
-       photoDiv.appendChild(img);
+      photoDiv.appendChild(img);
 
-       let priceH4 = document.createElement("h4");
-       priceH4.classList.add("price");
-       priceH4.innerText = `$${item.product.price}`;
-       photoDiv.appendChild(priceH4);
+      const priceH4 = document.createElement("h4");
+      priceH4.classList.add("price");
+      priceH4.innerText = `$${item.product.price}`;
+      photoDiv.appendChild(priceH4);
 
-       outerDiv.appendChild(photoDiv);
+      outerDiv.appendChild(photoDiv);
 
-       // Açıklama
-       let descriptionDiv = document.createElement("div");
-       descriptionDiv.classList.add("description");
-       descriptionDiv.innerText = item.product.description;
-       outerDiv.appendChild(descriptionDiv);
+      const descriptionDiv = document.createElement("div");
+      descriptionDiv.classList.add("description");
+      descriptionDiv.innerText = item.product.description;
+      outerDiv.appendChild(descriptionDiv);
 
-       // Adet
-       let quantityDiv = document.createElement("div");
-       quantityDiv.classList.add("quantity");
-       quantityDiv.innerText = `Quantity: ${item.quantity}`;
-       outerDiv.appendChild(quantityDiv);
+      const quantityDiv = document.createElement("div");
+      quantityDiv.classList.add("quantity");
+      quantityDiv.innerText = `Quantity: ${item.quantity}`;
+      outerDiv.appendChild(quantityDiv);
 
-       // Sepete ekle
-       parent.appendChild(outerDiv);
-   }
+      // ❌ Remove butonu kaldırıldı
+
+      parent.appendChild(outerDiv);
+  }
+
+
+removeFromCart(productId) {
+    if (!productId || isNaN(productId)) {
+        console.error("Geçersiz productId:", productId);
+        return;
+    }
+
+    const url = `${config.baseUrl}/cart/products/${productId}`;
+    axios.delete(url, { headers: userService.getHeaders() })
+        .then(() => {
+            this.loadCart(() => {
+                this.loadCartPage();
+            });
+        })
+        .catch(() => {
+            templateBuilder.append("error", { error: "Remove item failed." }, "errors");
+        });
+}
 
 
     clearCart() {

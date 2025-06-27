@@ -3,6 +3,7 @@ package org.yearup.data.mysql;
 import org.springframework.stereotype.Component;
 import org.yearup.data.ProductDao;
 import org.yearup.data.ShoppingCartDao;
+import org.yearup.data.UserDao;
 import org.yearup.models.Product;
 import org.yearup.models.ShoppingCart;
 import org.yearup.models.ShoppingCartItem;
@@ -10,18 +11,18 @@ import org.yearup.models.ShoppingCartItem;
 import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDao
 {
     private final ProductDao productDao;
+    private final UserDao userDao;
 
-    public MySqlShoppingCartDao(DataSource dataSource, ProductDao productDao)
+    public MySqlShoppingCartDao(DataSource dataSource, ProductDao productDao, UserDao userDao)
     {
         super(dataSource);
         this.productDao = productDao;
+        this.userDao = userDao;
     }
 
     @Override
@@ -51,7 +52,7 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
                     item.setQuantity(quantity);
                     item.setDiscountPercent(discount);
 
-                    cart.getItems().put(productId, item); // ✅ Doğru kullanım
+                    cart.getItems().put(productId, item);
                 }
             }
         }
@@ -62,7 +63,6 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
 
         return cart;
     }
-
 
     @Override
     public void addProduct(int userId, int productId)
@@ -103,23 +103,9 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
         {
             throw new RuntimeException(e);
         }
-    }@Override
-public void removeProduct(int userId, int productId)
-{
-    String sql = "DELETE FROM shopping_cart WHERE user_id = ? AND product_id = ?";
+    }
 
-    try (Connection connection = getConnection())
-    {
-        PreparedStatement statement = connection.prepareStatement(sql);
-        statement.setInt(1, userId);
-        statement.setInt(2, productId);
-        statement.executeUpdate();
-    }
-    catch (SQLException e)
-    {
-        throw new RuntimeException(e);
-    }
-}
+
 
 
     @Override

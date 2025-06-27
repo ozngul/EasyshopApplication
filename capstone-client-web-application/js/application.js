@@ -101,18 +101,22 @@ function closeError(control) {
     }, 3000);
 }
 
-// ✅ Başlangıçta her servisi başlat ve ana ekranı yükle
 document.addEventListener('DOMContentLoaded', () => {
     userService = new UserService();
     userService.setHeaderLogin();
 
     cartService = new ShoppingCartService();
-    cartService.loadCart();
 
     productService = new ProductService();
     categoryService = new CategoryService();
     profileService = new ProfileService();
 
-    // Sayfa ilk yüklemesinde ana ekranı getir
+    // 🔐 Yalnızca kullanıcı giriş yaptıysa sepeti yükle
+    if (userService.isLoggedIn()) {
+        setTimeout(() => {
+            cartService.loadCart();
+        }, 100);
+    }
+
     loadHome();
 });

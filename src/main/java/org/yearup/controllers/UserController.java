@@ -41,4 +41,12 @@ public class UserController {
             return new ResponseEntity<>("Error deleting user.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @GetMapping("")
+    public ResponseEntity<?> getAllUsers() {
+        try {
+            return new ResponseEntity<>(userDao.getAllUsers(), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error retrieving users.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

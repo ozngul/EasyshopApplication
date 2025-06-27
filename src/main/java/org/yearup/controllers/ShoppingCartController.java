@@ -32,7 +32,7 @@ public class ShoppingCartController
         this.productDao = productDao;
     }
 
-    // GET /cart - Kullanıcının sepetini getir
+    // Kullanıcının sepetini getir
     @GetMapping("")
     public ShoppingCart getCart(Principal principal)
     {
@@ -47,7 +47,7 @@ public class ShoppingCartController
         }
     }
 
-    // POST /cart/products/{productId} - Sepete ürün ekle
+    // Sepete ürün ekle
     @PostMapping("/products/{productId}")
     public void addProductToCart(@PathVariable int productId, Principal principal)
     {
@@ -62,7 +62,7 @@ public class ShoppingCartController
         }
     }
 
-    // PUT /cart/products/{productId} - Ürün miktarını güncelle
+    // Sepetteki ürünün miktarını güncelle
     @PutMapping("/products/{productId}")
     public void updateCartItem(@PathVariable int productId,
                                @RequestBody ShoppingCartItem item,
@@ -79,7 +79,8 @@ public class ShoppingCartController
         }
     }
 
-    // DELETE /cart - Sepeti temizle
+
+    // Sepeti tamamen boşalt
     @DeleteMapping("")
     public void clearCart(Principal principal)
     {
@@ -93,22 +94,8 @@ public class ShoppingCartController
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to clear cart", e);
         }
     }
-    @DeleteMapping("/products/{productId}")
-    public void removeProductFromCart(@PathVariable int productId, Principal principal)
-    {
-        try
-        {
-            String userName = principal.getName();
-            User user = userDao.getByUserName(userName);
-            shoppingCartDao.removeProduct(user.getId(), productId);
-        }
-        catch(Exception e)
-        {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to remove product", e);
-        }
-    }
 
-    // Ortak kullanıcı çekme kodu
+    // Yardımcı: Kullanıcıyı username'den bul
     private User getAuthenticatedUser(Principal principal)
     {
         String userName = principal.getName();

@@ -13,6 +13,4 @@ public interface ShoppingCartDao
 
     void clearCart(int userId);
 
-    void removeProduct(int userId, int productId);
-
 }
